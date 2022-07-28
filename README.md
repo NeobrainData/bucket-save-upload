@@ -2,7 +2,7 @@
 
 test
 
-´´´
+```
 #Install the bucket_save library before running the code
 #!pip install -U  git+https://github.com/NeobrainData/bucket-save/
 
@@ -32,4 +32,4 @@ bucket.insert(doc_list,
 files_path="temp/files", #local path to save temp files
 bucket_folder="testing" #Folder in bucket to save files (If it doesn't exist it will create)
 )
-´´´
+```
