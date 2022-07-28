@@ -15,8 +15,15 @@ To install the library use: `pip install -U  git+https://github.com/NeobrainData
 * 2 - If it is, check if the esco_alt_job_ids from the document are inside the one in GCS, if not add them
 * 3 - If not add the new document.
 
-#### Your machine needs to have the access code in the environment variable before using the library.
-#### GCS don’t accept date time objects, you need to convert them to strings.
+### Your machine needs to have the access code in the environment variable before using the library.
+
+If you don't have it, download the key from GCS and set it using this code:
+```
+import os
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "path_to_your_.json_credential_file"
+```
+
+### PS: GCS don’t accept date time objects, you need to convert them to strings.
 
 ### Code example:
 
