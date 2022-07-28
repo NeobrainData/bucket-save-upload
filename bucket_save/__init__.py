@@ -1,3 +1,1 @@
-import os
-print(os.getcwd())
-import database
+from . import database
