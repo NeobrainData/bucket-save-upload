@@ -1,1 +1,1 @@
-from . import gcp_bucket
+from gcp_bucket import Bucket
