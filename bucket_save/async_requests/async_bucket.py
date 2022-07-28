@@ -1,7 +1,7 @@
 import asyncio
 from gcloud.aio.auth import Token
 from gcloud.aio.storage import Storage 
-from .async_requests import StorageWithBackoff 
+from .storage_backoff import StorageWithBackoff 
 from aiohttp.client_exceptions import ClientConnectorError,ClientResponseError
 class AsyncBucket():
     def __init__(self) -> None:
