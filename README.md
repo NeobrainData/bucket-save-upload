@@ -1,7 +1,7 @@
 This library is used to save job offers in Neobrain's Google cloud storage.
 
 
-To install the library use: `pip install -U  git+https://github.com/NeobrainData/bucket-save/`
+To install the library use: ```pip install -U  git+https://github.com/NeobrainData/bucket-save/```
 
 
 Code example:
