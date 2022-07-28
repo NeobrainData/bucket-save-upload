@@ -1,1 +1,1 @@
-from .database import gcp_bucket
+from . import database
