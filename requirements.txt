@@ -1,10 +1,5 @@
-tqdm
-pandas
-requests
-nest_asyncio
 aiohttp
-scrapy==2.5.1
-Twisted
 openpyxl
-scrapyx-bright-data==0.1.2
 gcloud.aio.storage
+backoff
+asyncio
