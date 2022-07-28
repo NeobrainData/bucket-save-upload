@@ -4,10 +4,6 @@ To install the library use: `pip install -U  git+https://github.com/NeobrainData
 
 ### Rules
 
-#### Each dictionary must contain at least:
-* id: This library will save the id as the name of the file
-* esco_alt_job_ids: a list with the ESCO ID's
-
 ### Steps to save:
 #### For each document:
 
@@ -25,6 +21,11 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "path_to_your_.json_credential_fi
 
 ### PS: GCS don’t accept date time objects, you need to convert them to strings.
 
+#### Two fields are REQUIRED in each document:
+
+* **id**: This library will save the id as the name of the file
+* **esco_alt_job_ids**: list with the ESCO ID's
+
 ### Code example:
 
 ```
@@ -36,11 +37,10 @@ bucket = bucket_save.Bucket("NAME_OF_THE_BUCKET")
 doc_list=[{
     "id": "a1b2c3d4e5f6g7h8i9j0",
     "title": "title",
-    "company": "company",
-    "location": "location",
-    "url": "url",
-    "date": "date",
-    "job_type": "job_type",
+    "company": "Neobrain",
+    "location": "Paris - France",
+    "date": "01/01/2000",
+    "job_type": "Presential",
     "esco_alt_job_ids": ["30061697"],
 }]
 
