@@ -1,7 +1,6 @@
-## This library is used to save job offers in Neobrain's Google cloud storage.
+## This library is used to save job offers in Neobrain's Google cloud storage in a parallel fashion
 
-
-## To install the library use: `pip install -U  git+https://github.com/NeobrainData/bucket-save/`
+To install the library use: `pip install -U  git+https://github.com/NeobrainData/bucket-save/`
 
 ### Rules
 
@@ -9,8 +8,14 @@
 * id: the jobkey (will save the name of the file as the jobkey)
 * esco_alt_job_ids: a list with the ESCO ID's
 
+### Steps to save:
+* 1 - 
 
-Code example:
+
+#### Your machine needs to have the access code in the environment variable before using the library.
+#### GCS don’t accept date time objects, you need to convert them to strings.
+
+### Code example:
 
 ```
 import bucket_save
@@ -34,3 +39,4 @@ files_path="temp/files", #local path to save temp files
 bucket_folder="testing" #Folder in bucket to save files (If it doesn't exist it will create)
 )
 ```
+
