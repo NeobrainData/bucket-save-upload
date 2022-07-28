@@ -1,10 +1,11 @@
-## This library is used to save job offers in Neobrain's Google cloud storage in a parallel fashion
+# This library is used to save job offers in Neobrain's Google cloud storage in a parallel fashion
+
+---
 
 To install the library use: `pip install -U  git+https://github.com/NeobrainData/bucket-save/`
 
-### Rules
-
 ### Steps to save:
+
 #### For each document:
 
 * 1 - Check in GCS if the document is already there
