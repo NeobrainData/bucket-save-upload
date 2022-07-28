@@ -17,5 +17,5 @@ setuptools.setup(
     },
     license='None',
     packages=['bucket_save'],
-    install_requires=['requests'],
+    install_requires=['requests',"aiohttp","openpyxl","gcloud.aio.storage","backoff","asyncio"],
 )
