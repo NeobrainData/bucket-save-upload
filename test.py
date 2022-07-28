@@ -1,4 +1,4 @@
-from bucket_save.database.gcp_bucket import Bucket
+from bucket_save.gcp_bucket import Bucket
 
 bucket = Bucket("test_indeed_bucket_neobrain")
 

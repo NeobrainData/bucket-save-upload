@@ -1,8 +1,8 @@
 import json
 import asyncio
-from ..utils.utils_file import Utils
+from .utils_file import Utils
 import os
-from ..async_requests.async_bucket import AsyncBucket
+from .async_bucket import AsyncBucket
 from aiohttp.client_exceptions import ClientResponseError
 
 class Bucket():
