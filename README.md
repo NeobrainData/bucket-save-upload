@@ -5,12 +5,15 @@ To install the library use: `pip install -U  git+https://github.com/NeobrainData
 ### Rules
 
 #### Each dictionary must contain at least:
-* id: the jobkey (will save the name of the file as the jobkey)
+* id: This library will save the id as the name of the file
 * esco_alt_job_ids: a list with the ESCO ID's
 
 ### Steps to save:
-* 1 - 
+#### For each document:
 
+* 1 - Check in GCS if the document is already there
+** 1.1 - If it is, check if the esco_alt_job_ids from the document are inside the one in GCS, if not add them
+** 1.2 - If not add the new document.
 
 #### Your machine needs to have the access code in the environment variable before using the library.
 #### GCS don’t accept date time objects, you need to convert them to strings.
