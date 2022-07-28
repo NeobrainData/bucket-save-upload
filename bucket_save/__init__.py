@@ -1,1 +1,1 @@
-from .bucket_save import database
+from .database import gcp_bucket
