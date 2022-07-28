@@ -1,3 +1,3 @@
 import os
-print(os.cwd())
+print(os.getcwd())
 import database
