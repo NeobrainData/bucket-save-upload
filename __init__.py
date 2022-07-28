@@ -1,2 +1,2 @@
 
-from .database.gcp_bucket import Bucket
+from database.gcp_bucket import Bucket
