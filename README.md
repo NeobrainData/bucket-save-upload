@@ -3,7 +3,7 @@
 To install the library use: `pip install -U  git+https://github.com/NeobrainData/bucket-save/` (register to pip will be implemented soon)
 
 
-### This library has 3 methods: 
+## This library has 3 methods: 
 
 * retrieve_files: Download files from GCP as JSON objects.
 * upload: Upload files to GCS
@@ -14,7 +14,7 @@ The code examples folder contains a python file with an example for each method.
 PS: This library doesn't support Jupyter Notebooks because it relies on asyncio library to parallelize the code.
 
 
-#### Retrieve Files (Download)
+### Retrieve Files (Download)
 
 **parameters:**
 * files_names (list of strings) : Name of the files in GCS
@@ -29,7 +29,7 @@ returns (dict):
 }
 ```
 
-#### Upload
+### Upload
 
 **parameters:**
 * files (list): The list of JSON/Dictionarie documents,
@@ -40,7 +40,7 @@ returns an int with the number of successful updates.
 
 
 
-#### Insert Replacing
+### Insert Replacing
 
 This function is specifically done to solve Neobrain's problem. I don't recomend the use of it in other cases.
 
