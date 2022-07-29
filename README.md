@@ -1,4 +1,4 @@
-## This library save/download files in Google cloud storage in a parallel fashion
+## This library save/download files in Google Cloud Storage in a parallel fashion
 
 To install the library use: `pip install -U  git+https://github.com/NeobrainData/bucket-save/`
 
