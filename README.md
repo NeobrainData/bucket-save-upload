@@ -61,6 +61,8 @@ This function is specifically done to solve Neobrain's problem. I don't recomend
 
 
 
+## Important notes :
+
 ### PS: Your machine needs to have the access code in the environment variable before using the library.
 
 If you don't have it, download the key from GCS and set it using this code:
