@@ -14,7 +14,7 @@ The code examples folder contains a python file with an example for each method.
 PS: This library doesn't support Jupyter Notebooks because it relies on asyncio library to parallelize the code.
 
 
-### Retrieve Files (Download)
+### 1 - Retrieve Files (Download)
 
 **parameters:**
 * files_names (list of strings) : Name of the files in GCS
@@ -29,7 +29,7 @@ returns (dict):
 }
 ```
 
-### Upload
+### 2 - Upload
 
 **parameters:**
 * files (list): The list of JSON/Dictionarie documents,
@@ -40,7 +40,7 @@ returns an int with the number of successful updates.
 
 
 
-### Insert Replacing
+### 3 - Insert Replacing
 
 This function is specifically done to solve Neobrain's problem. I don't recomend the use of it in other cases.
 
