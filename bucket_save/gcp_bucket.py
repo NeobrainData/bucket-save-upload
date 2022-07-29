@@ -10,95 +10,63 @@ class Bucket():
     This class deals with the GCP bucket.
     """
     def __init__(self,bucket_name : str ) -> None:
-        #Initialize bucket
         self.async_bucket = AsyncBucket()
         self.bucket_name = bucket_name
         self.utils = Utils()
 
-    def save_files_to_folder(self,json_data:dict,filename:str,folder:str) -> None:
-        """
-        This function saves the documents into files folder.
-        It first checks if the files is already in the folder and if it is instead of replacing it it adds the new esco id's.
-        """
-        #Check if the file is already inside the folder if not just save it otherwise check if esco id's are the same and merge them if not
-        path = folder + filename
 
-        files = os.listdir(folder)
-        if not filename in files:
-            self.utils.save_json_file(json_data,filename,folder)
-        else:
-            doc = self.utils.load_json_file(path)
-            if json_data["esco_alt_job_ids"] != doc["esco_alt_job_ids"]:
-                doc["esco_alt_job_ids"] = list(set(doc["esco_alt_job_ids"]+ json_data["esco_alt_job_ids"]))
-                self.utils.save_json_file(doc,filename,folder)
-
-    def retrieve_files_from_gcs(self,files_list : list,folder : str) -> dict:
+    def retrieve_files(self,files_names : list,folder : str) -> dict:
         """
         This function receives the list of files_list which are the files contained in files folder (new jobs).
         It tries to download each one of them from bucket. 
         If it succeeds it means that we already have the job.
         This helps to avoid duplicates.
         """
-        files_list = [folder+"/"+name for name in files_list]
-        response = asyncio.run(self.async_bucket.download(self.bucket_name, files_list))
-        fls = {}
+        files_names = [folder+"/"+name for name in files_names]
+        response = asyncio.run(self.async_bucket.download(self.bucket_name, files_names))
         fails = 0
+        downloaded = 0
         for file in response[0]:
             try:
                 if isinstance(file,ClientResponseError):
                     fails += 1
-                    continue
                 else:
-                    tmp_f = json.loads(file)
-                    fls.update({tmp_f["id"]:tmp_f})
+                    downloaded += 1
             except Exception as e:
                 print(e)
-        print("Total Files: ", len(files_list))
-        print("Sucessful downloaded files from GCS: {}. Fails (Files not in GCS): {}".format(len(fls),fails))
-        return fls
-
-    def up_jsons_to_gcp(self,files_path : str, gcs_bucket_folder : str) -> dict:
-        """
-        This function receives the list of files_list which are the files contained in files folder (new jobs).
-        It tries to download each one of them from bucket. 
-        If it succeeds it means that we already have the job.
-        This helps to avoid duplicates.
-        """
-        files_list = list(os.listdir(files_path))
-
-        files = []
-        for file in files_list:
-            with open(files_path+"/"+file, mode="r") as f:
-                files.append(f.read())
-        response = asyncio.run(self.async_bucket.upload(self.bucket_name, gcs_bucket_folder, files_list,files ))
-        return response
+                
+        return {"response":response,"downloaded":downloaded,"fails":fails}
 
 
-    def compare_jobkeys(self, gcs_bucket_folder : str, files_path : str) -> None:
+
+    def __compare_jobkeys(self, gcs_bucket_folder : str, comparison_field : str, files_path : str, filename_field : str) -> None:
         """
         This function tries to download each file contained inside files folder. 
         If it downloads it means that we already have this offer in the bucket and in this case we only update the key.
         """
 
-        files_list = list(os.listdir(files_path))
+        files_names = list(os.listdir(files_path))
 
-        #Returns a dictionary with files that are already in the bucket and share the same jobkey as the files in files folder
-        downloaded_jobs_dict = self.retrieve_files_from_gcs(files_list,folder=gcs_bucket_folder) 
+        #Generate dictionary with files that are already in the bucket and share the same jobkey as the files in files folder
+        rs = self.retrieve_files(files_names,folder=gcs_bucket_folder)
+        response = rs["response"]
+        downloaded_jobs_dict = self.utils.parse_response(response,filename_field)
 
 
-        for filename in files_list:
+        #Iterate over files in files folder and update the key if we already have it in the bucket
+        for filename in files_names:
             new_job = self.utils.load_json_file(files_path + "/{}".format(filename)) #Scraped job offer
             
             #If this code fails it means that we don't have the job in the bucket, nothing needs to be done, we just upload it.
             try:
-                downloaded_job = downloaded_jobs_dict[new_job["id"]] #Job offer from bucket
+                downloaded_job = downloaded_jobs_dict[new_job[filename_field]] #Job offer from bucket
 
                 #Iterate over the scraped offer esco id's and check if they are already inside of the one in the bucket
                 #If not add and replace the file in the bucket with the updated esco id's
                 new_esco_id = False
-                for esco_id in new_job["esco_alt_job_ids"]:
-                    if esco_id not in downloaded_job["esco_alt_job_ids"]:
-                        downloaded_job["esco_alt_job_ids"].append(esco_id) #Append current id to the existing job
+                for esco_id in new_job[comparison_field]:
+                    if esco_id not in downloaded_job[comparison_field]:
+                        downloaded_job[comparison_field].append(esco_id) #Append current id to the existing job
                         new_esco_id = True
                 if new_esco_id:
                     self.utils.save_json_file(downloaded_job,filename,files_path+"/") #Save the job with the new id
@@ -111,13 +79,17 @@ class Bucket():
 
 
 
-    def gsutil_upload_files(self, gcs_bucket_folder : str, files_path : str, bucket : str = "test_indeed_bucket_neobrain") -> int:
-        """This function compares the scraped jobs with the jobs that are already in the bucket and uploads the new ones / updates the old ones."""
-        
-        self.compare_jobkeys(gcs_bucket_folder=gcs_bucket_folder,files_path=files_path) #Check if we already have those offers on bucket and update/delete them if we do
-        #up_cmd = "gsutil -m cp {}/* gs://{}/{}".format(files_path,bucket,gcs_bucket_folder) #GSUtil command #Not used anymore (replaced by the function below)
-        #os.system(up_cmd) #Upload remaining files in files folder to bucket #Not used anymore (replaced by the function below)
-        response = self.up_jsons_to_gcp(files_path=files_path,gcs_bucket_folder=gcs_bucket_folder) #Upload remaining files in files folder to bucket
+    def upload_files(self,files : list, files_names : list, gcs_bucket_folder : str) -> int:
+        """
+        This function uploads the files contained in files_path folder to GCS bucket.
+        It returns the number of files uploaded.
+        """
+        files = [json.dumps(file) if isinstance(file,dict) else file for file in files]
+
+        if len(files) != len(files_names):
+            raise Exception("Files and files_names must have the same length")
+
+        response = asyncio.run(self.async_bucket.upload(self.bucket_name, gcs_bucket_folder, files_names,files ))
 
         counter = 0
         for d in response[0]:
@@ -129,26 +101,42 @@ class Bucket():
 
         return counter
 
-    def insert(self,doc_list : list,files_path : str = "temp/files",bucket_folder : str = "indeed") -> None:
+    def insert_replacing(self,doc_list : list,filename_field : str, bucket_folder : str,comparison_field : str, files_path : str = "temp/files") -> None:
         """
-        This function inserts a list of dictionaries into the bucket.
+        This function compare each document from doc_list with the docs that are already in the bucket and uploads the new ones / updates the old ones.
         """
-        print("Step 4: Inserting into bucket")
+
         #If the folder doesn't exist create it
         if not os.path.exists(files_path):
             os.makedirs(files_path)
 
 
-        ids = [doc_list[i]["id"] +".json" for i in range(len(doc_list))] #Generator with Id's
+        ids = [doc_list[i][filename_field] +".json" for i in range(len(doc_list))] #Generator with Id's
         paths = [files_path+"/" for _ in ids] #Generator with paths
 
         self.utils.clean_directory(files_path) 
 
-        list(map(self.save_files_to_folder,doc_list,ids,paths)) #Save jsons into files
-        files_inserted = self.gsutil_upload_files(
+        list(map(self.utils.save_files_to_folder,doc_list,ids,paths,comparison_field)) #Save jsons into files
+
+        self.__compare_jobkeys(
             gcs_bucket_folder=bucket_folder,
-            bucket=self.bucket_name,
-            files_path=files_path) #Save files in files folder into the bucket
+            comparison_field=comparison_field,
+            files_path=files_path,
+            filename_field=filename_field
+            ) #Check if we already have those offers on bucket and update/delete them if we do
+
+        files_names = list(os.listdir(files_path))
+
+        files = []
+        for file in files_names:
+            with open(files_path+"/"+file, mode="r") as f:
+                files.append(f.read())
+
+        files_inserted = self.upload_files(
+            files=files,
+            files_names=files_names,
+            gcs_bucket_folder=bucket_folder,
+            ) #Save files in files folder into the bucket
         
         print("Files inserted/updated: {}".format(files_inserted))
 

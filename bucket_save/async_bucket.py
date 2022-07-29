@@ -10,7 +10,7 @@ class AsyncBucket():
 
     async def download(self,bucket : str, obj_names : list) -> list:
         """
-        This function downloads a list of objects from a bucket in a parallel fashion.
+        This function downloads a list of json objects from a bucket in a parallel fashion.
         """
         sa_token = Token(scopes=self.scopes)
         response = []

@@ -1,5 +1,6 @@
 import os, shutil
 import json
+from aiohttp.client_exceptions import ClientResponseError
 
 class Utils():
     def clean_directory(self,folder : str) -> None:
@@ -35,4 +36,35 @@ class Utils():
         with open(filename) as f:
             return json.load(f)
 
+    def save_files_to_folder(self,json_data:dict, filename : str, folder : str, comparison_field : str) -> None:
+        """
+        This function saves the documents into files folder.
+        It first checks if the files is already in the folder and if it is instead of replacing it it adds the new esco id's.
+        """
+        #Check if the file is already inside the folder if not just save it otherwise check if esco id's are the same and merge them if not
+        path = folder + filename
 
+        files = os.listdir(folder)
+        if not filename in files:
+            self.save_json_file(json_data,filename,folder)
+        else:
+            doc = self.load_json_file(path)
+            if json_data[comparison_field] != doc[comparison_field]:
+                doc[comparison_field] = list(set(doc[comparison_field]+ json_data[comparison_field]))
+                self.save_json_file(doc,filename,folder)
+
+    def parse_response(self,response: list, filename_field : str) -> list:
+        """
+        Receives a list of responses from GCS and returns a list of dictionaries with the information of each file.
+        """        
+        downloaded_jobs_dict = {}
+        for file in response[0]:
+            try:
+                if isinstance(file,ClientResponseError):
+                    continue
+                else:
+                    tmp_f = json.loads(file)
+                    downloaded_jobs_dict.update({tmp_f[filename_field]:tmp_f})
+            except Exception as e:
+                print(e)
+        return downloaded_jobs_dict
