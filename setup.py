@@ -4,8 +4,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name='bucket_save',
-    version='1.0',
+    name='bucket_save_upload',
+    version='1.0.1',
     author='Rennan Valadares',
     author_email='rennanvoa2@gmail.com',
     description='Save files in a GCS bucket',
@@ -16,6 +16,6 @@ setuptools.setup(
         "Bug Tracker": "https://github.com/NeobrainData/bucket-save/issues"
     },
     license='None',
-    packages=['bucket_save'],
+    packages=['bucket_save_upload'],
     install_requires=['requests',"aiohttp","openpyxl","gcloud.aio.storage","backoff","asyncio"],
 )
