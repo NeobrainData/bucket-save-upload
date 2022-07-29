@@ -21,11 +21,13 @@ PS: This library doesn't support Jupyter Notebooks because it relies on asyncio 
 * folder (string) : The folder on GCS where the files are located
 
 returns (dict):
-```{
+```
+{
     response (list): A list with the results
     "downloaded" (int): The number of downloaded fiels
     "fails" (int): The number of failed downloads
-}```
+}
+```
 
 #### Upload
 
