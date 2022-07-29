@@ -16,7 +16,7 @@ PS: This library doesn't support Jupyter Notebooks because it relies on asyncio 
 
 #### Retrieve Files (Download)
 
-parameters:
+**parameters:**
 * files_names (list of strings) : Name of the files in GCS
 * folder (string) : The folder on GCS where the files are located
 
@@ -29,7 +29,7 @@ returns (dict):
 
 #### Upload
 
-parameters:
+**parameters:**
 * files (list): The list of JSON/Dictionarie documents,
 * files_names (list): A list of strings with the names that each file should have when the code saves it to GCS
 * gcs_bucket_folder (string): The folder on GCS where the files are going to be save
@@ -42,7 +42,7 @@ returns an int with the number of successful updates.
 
 This function is specifically done to solve Neobrain's problem. I don't recomend the use of it in other cases.
 
-parameters:
+**parameters:**
 * doc_list (list): list with dictionaries/jsons to update/upload
 * filename_field (string):  Name of the field in each JSON/DICT that holds the name of the files ("id" in most of the cases. This field holds the name of the files.)
 * bucket_folder (string): The folder on GCS where the files are going to be save/update.
@@ -59,7 +59,7 @@ parameters:
 
 
 
-### Your machine needs to have the access code in the environment variable before using the library.
+### PS: Your machine needs to have the access code in the environment variable before using the library.
 
 If you don't have it, download the key from GCS and set it using this code:
 ```
@@ -67,4 +67,4 @@ import os
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "path_to_your_.json_credential_file"
 ```
 
-### PS: GCS don’t accept date time objects, you need to convert them to strings.
+### PS2: GCS don’t accept date time objects, you need to convert them to strings.
