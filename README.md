@@ -1,6 +1,6 @@
 ## This library save/download files in Google Cloud Storage in a parallel fashion
 
-To install the library use: `pip install -U  git+https://github.com/NeobrainData/bucket-save/`
+To install the library use: `pip install -U  git+https://github.com/NeobrainData/bucket-save/` (register to pip will be implemented soon)
 
 
 ### This library has 3 methods: 
@@ -17,8 +17,8 @@ PS: This library doesn't support Jupyter Notebooks because it relies on asyncio 
 #### Retrieve Files (Download)
 
 parameters:
-    * files_names (list of strings) : Name of the files in GCS
-    * folder (string) : The folder on GCS where the files are located
+* files_names (list of strings) : Name of the files in GCS
+* folder (string) : The folder on GCS where the files are located
 
 returns (dict):
 {
@@ -30,9 +30,9 @@ returns (dict):
 #### Upload
 
 parameters:
-    * files (list): The list of JSON/Dictionarie documents,
-    * files_names (list): A list of strings with the names that each file should have when the code saves it to GCS
-    * gcs_bucket_folder (string): The folder on GCS where the files are going to be save
+* files (list): The list of JSON/Dictionarie documents,
+* files_names (list): A list of strings with the names that each file should have when the code saves it to GCS
+* gcs_bucket_folder (string): The folder on GCS where the files are going to be save
 
 returns an int with the number of successful updates.
 
@@ -43,11 +43,11 @@ returns an int with the number of successful updates.
 This function is specifically done to solve Neobrain's problem. I don't recomend the use of it in other cases.
 
 parameters:
-    * doc_list (list): list with dictionaries/jsons to update/upload
-    * filename_field (string):  Name of the field in each JSON/DICT that holds the name of the files ("id" in most of the cases. This field holds the name of the files.)
-    * bucket_folder (string): The folder on GCS where the files are going to be save/update.
-    * comparison_field (string): The field to update in case the file is already in GCP ( "esco_alt_job_ids")
-    * files_path (string - default="temp/files"): Local folder path to save files. It will create the folder if it doesn't exist and clean it after finish running.
+* doc_list (list): list with dictionaries/jsons to update/upload
+* filename_field (string):  Name of the field in each JSON/DICT that holds the name of the files ("id" in most of the cases. This field holds the name of the files.)
+* bucket_folder (string): The folder on GCS where the files are going to be save/update.
+* comparison_field (string): The field to update in case the file is already in GCP ( "esco_alt_job_ids")
+* files_path (string - default="temp/files"): Local folder path to save files. It will create the folder if it doesn't exist and clean it after finish running.
 
 **Steps:**
 
