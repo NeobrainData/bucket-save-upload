@@ -10,9 +10,9 @@ class Bucket():
     This class deals with the GCP bucket.
     """
     def __init__(self,bucket_name : str ) -> None:
-        self.async_bucket = AsyncBucket()
-        self.bucket_name = bucket_name
-        self.utils = Utils()
+        self.__async_bucket = AsyncBucket()
+        self.__bucket_name = bucket_name
+        self.__utils = Utils()
 
 
     def retrieve_files(self,files_names : list,folder : str) -> dict:
@@ -23,7 +23,7 @@ class Bucket():
         This helps to avoid duplicates.
         """
         files_names = [folder+"/"+name for name in files_names]
-        response = asyncio.run(self.async_bucket.download(self.bucket_name, files_names))
+        response = asyncio.run(self.__async_bucket.download(self.__bucket_name, files_names))
         fails = 0
         downloaded = 0
         for file in response[0]:
@@ -50,12 +50,12 @@ class Bucket():
         #Generate dictionary with files that are already in the bucket and share the same jobkey as the files in files folder
         rs = self.retrieve_files(files_names,folder=gcs_bucket_folder)
         response = rs["response"]
-        downloaded_jobs_dict = self.utils.parse_response(response,filename_field)
+        downloaded_jobs_dict = self.__utils.parse_response(response,filename_field)
 
 
         #Iterate over files in files folder and update the key if we already have it in the bucket
         for filename in files_names:
-            new_job = self.utils.load_json_file(files_path + "/{}".format(filename)) #Scraped job offer
+            new_job = self.__utils.load_json_file(files_path + "/{}".format(filename)) #Scraped job offer
             
             #If this code fails it means that we don't have the job in the bucket, nothing needs to be done, we just upload it.
             try:
@@ -69,9 +69,9 @@ class Bucket():
                         downloaded_job[comparison_field].append(esco_id) #Append current id to the existing job
                         new_esco_id = True
                 if new_esco_id:
-                    self.utils.save_json_file(downloaded_job,filename,files_path+"/") #Save the job with the new id
+                    self.__utils.save_json_file(downloaded_job,filename,files_path+"/") #Save the job with the new id
                 else:
-                    self.utils.delete_file(filename,files_path) #Delete the file if we already have the offer
+                    self.__utils.delete_file(filename,files_path) #Delete the file if we already have the offer
 
             except Exception as e:
                 pass
@@ -89,7 +89,7 @@ class Bucket():
         if len(files) != len(files_names):
             raise Exception("Files and files_names must have the same length")
 
-        response = asyncio.run(self.async_bucket.upload(self.bucket_name, gcs_bucket_folder, files_names,files ))
+        response = asyncio.run(self.__async_bucket.upload(self.__bucket_name, gcs_bucket_folder, files_names,files ))
 
         counter = 0
         for d in response[0]:
@@ -114,9 +114,9 @@ class Bucket():
         ids = [doc_list[i][filename_field] +".json" for i in range(len(doc_list))] #Generator with Id's
         paths = [files_path+"/" for _ in ids] #Generator with paths
 
-        self.utils.clean_directory(files_path) 
+        self.__utils.clean_directory(files_path) 
 
-        list(map(self.utils.save_files_to_folder,doc_list,ids,paths,comparison_field)) #Save jsons into files
+        list(map(self.__utils.save_files_to_folder,doc_list,ids,paths,comparison_field)) #Save jsons into files
 
         self.__compare_jobkeys(
             gcs_bucket_folder=bucket_folder,
@@ -140,4 +140,4 @@ class Bucket():
         
         print("Files inserted/updated: {}".format(files_inserted))
 
-        self.utils.clean_directory(files_path)
+        self.__utils.clean_directory(files_path)
