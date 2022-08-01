@@ -5,7 +5,7 @@ To install the library use: `pip install -U  git+https://github.com/NeobrainData
 
 ## This library has 3 methods: 
 
-* retrieve_files: Download files from GCP as JSON objects.
+* download_files: Download files from GCP as JSON objects.
 * upload: Upload files to GCS
 * insert_replacing: Compares each document from doc_list with the docs that are already in the bucket and uploads the new ones / updates the old ones.
 
@@ -47,7 +47,6 @@ This function is specifically done to solve Neobrain's problem. I don't recomend
 **parameters:**
 * doc_list (list): list with dictionaries/jsons to update/upload
 * filename_field (string):  Name of the field in each JSON/DICT that holds the name of the files ("id" in most of the cases. This field holds the name of the files.)
-* bucket_folder (string): The folder on GCS where the files are going to be save/update.
 * comparison_field (string): The field to update in case the file is already in GCP ( "esco_alt_job_ids")
 * files_path (string - default="temp/files"): Local folder path to save files. It will create the folder if it doesn't exist and clean it after finish running.
 

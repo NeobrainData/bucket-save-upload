@@ -15,7 +15,7 @@ class Bucket():
         self.__utils = Utils()
 
 
-    def retrieve_files(self,files_names : list,folder : str) -> dict:
+    def download_files(self,files_names : list,folder : str) -> dict:
         """
         This function receives the list of files_list which are the files contained in files folder (new jobs).
         It tries to download each one of them from bucket. 
@@ -48,7 +48,7 @@ class Bucket():
         files_names = list(os.listdir(files_path))
 
         #Generate dictionary with files that are already in the bucket and share the same jobkey as the files in files folder
-        rs = self.retrieve_files(files_names,folder=gcs_bucket_folder)
+        rs = self.download_files(files_names,folder=gcs_bucket_folder)
         response = rs["response"]
         downloaded_jobs_dict = self.__utils.parse_response(response,filename_field)
 

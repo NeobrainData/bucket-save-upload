@@ -5,7 +5,7 @@ bucket = Bucket("test_indeed_bucket_neobrain")
 
 files_names = ["123.json","456.json"] #List with files names to download
 
-rs = bucket.retrieve_files(files_names=files_names,folder="testing")
+rs = bucket.download_files(files_names=files_names,folder="testing")
 
 #rs["downloaded"] is the number of downloaded files
 #rs["fails"] is the number of files that failed to download
