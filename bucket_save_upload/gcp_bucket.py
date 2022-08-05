@@ -10,18 +10,29 @@ class Bucket():
     This class deals with the GCP bucket.
     """
     def __init__(self,bucket_name : str ) -> None:
+        if isinstance(bucket_name,str):
+            self.__bucket_name = bucket_name
+        else:
+            raise Exception("Bucket name must be a string")
+
         self.__async_bucket = AsyncBucket()
-        self.__bucket_name = bucket_name
         self.__utils = Utils()
 
 
-    def download_files(self,files_names : list,folder : str) -> dict:
+    def download_files(self,files_names : list, folder : str) -> dict:
         """
         This function receives the list of files_list which are the files contained in files folder (new jobs).
         It tries to download each one of them from bucket. 
         If it succeeds it means that we already have the job.
         This helps to avoid duplicates.
         """
+
+        if not files_names:
+            raise Exception("files_names list must not be empty")
+        elif not(isinstance(files_names,list) and all(isinstance(item, str) for item in files_names)):
+            raise Exception("files names must be a list of strings containing the names of the files to download.")
+        
+     
         files_names = [folder+"/"+name for name in files_names]
         response = asyncio.run(self.__async_bucket.download(self.__bucket_name, files_names))
         fails = 0
@@ -77,17 +88,22 @@ class Bucket():
                 pass
 
 
-
-
     def upload_files(self,files : list, files_names : list, gcs_bucket_folder : str) -> int:
         """
         This function uploads the files contained in files_path folder to GCS bucket.
         It returns the number of files uploaded.
         """
-        files = [json.dumps(file) if isinstance(file,dict) else file for file in files]
 
-        if len(files) != len(files_names):
-            raise Exception("Files and files_names must have the same length")
+        if not files:
+            raise Exception("files list must not be empty")
+        elif not files_names:
+            raise Exception("files names list must not be empty")
+        elif not(isinstance(files_names,list) and all(isinstance(item, str) for item in files_names)):
+            raise Exception("files names must be a list of strings containing the names of the files to download.")
+        elif len(files) != len(files_names):
+            raise Exception("files and files_names must have the same length")
+
+        files = [json.dumps(file) if isinstance(file,dict) else file for file in files]
 
         response = asyncio.run(self.__async_bucket.upload(self.__bucket_name, gcs_bucket_folder, files_names,files ))
 
@@ -101,22 +117,26 @@ class Bucket():
 
         return counter
 
-    def insert_replacing(self,doc_list : list,filename_field : str, bucket_folder : str,comparison_field : str, files_path : str = "temp/files") -> None:
+    def insert_replacing(self,doc_list : list, filename_field : str, bucket_folder : str,comparison_field : str, files_path : str = "temp/files") -> None:
         """
         This function compare each document from doc_list with the docs that are already in the bucket and uploads the new ones / updates the old ones.
         """
+
+        if not(isinstance(doc_list,list) and all(isinstance(item, dict) for item in doc_list)):
+            raise Exception("doc_list must be a list of dictionaries.")
 
         #If the folder doesn't exist create it
         if not os.path.exists(files_path):
             os.makedirs(files_path)
 
-
         ids = [doc_list[i][filename_field] +".json" for i in range(len(doc_list))] #Generator with Id's
         paths = [files_path+"/" for _ in ids] #Generator with paths
+        fields = [comparison_field for _ in ids] #Generator with fields to compare
+
 
         self.__utils.clean_directory(files_path) 
 
-        list(map(self.__utils.save_files_to_folder,doc_list,ids,paths,comparison_field)) #Save jsons into files
+        list(map(self.__utils.save_files_to_folder,doc_list,ids,paths,fields)) #Save jsons into files
 
         self.__compare_jobkeys(
             gcs_bucket_folder=bucket_folder,

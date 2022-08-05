@@ -14,7 +14,7 @@ The code examples folder contains a python file with an example for each method.
 PS: This library doesn't support Jupyter Notebooks because it relies on asyncio library to parallelize the code.
 
 
-### 1 - Retrieve Files (Download)
+### 1 - Download Files
 
 **parameters:**
 * files_names (list of strings) : Name of the files in GCS
@@ -24,7 +24,7 @@ returns (dict):
 ```
 {
     response (list): A list with the results
-    "downloaded" (int): The number of downloaded fiels
+    "downloaded" (int): The number of downloaded files
     "fails" (int): The number of failed downloads
 }
 ```
@@ -71,3 +71,9 @@ os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "path_to_your_.json_credential_fi
 ```
 
 ### PS2: GCS don’t accept date time objects, you need to convert them to strings.
+
+
+Libraries used in this project:
+
+[backoff](https://github.com/litl/backoff)
+[gcloud-aio](https://github.com/talkiq/gcloud-aio)
