@@ -170,7 +170,7 @@ class Bucket():
             gcs_bucket_folder=bucket_folder,
             ) #Save files in files folder into the bucket
 
-        logging.info("{} new files inserted.".format(len(files_inserted) - updated))
+        logging.info("{} new files inserted.".format(files_inserted - updated))
         logging.info("{} updated files (same keys with different esco codes).".format(updated))
         logging.info("{} identical files not inserted.".format(duplicates))
 
