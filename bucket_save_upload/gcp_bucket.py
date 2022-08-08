@@ -51,7 +51,7 @@ class Bucket():
 
 
 
-    def __compare_jobkeys(self, gcs_bucket_folder : str, comparison_field : str, files_path : str, filename_field : str) -> None:
+    def __compare_jobkeys(self, gcs_bucket_folder : str, comparison_field : str, files_path : str, filename_field : str) -> tuple([int,int]):
         """
         This function tries to download each file contained inside files folder. 
         If it downloads it means that we already have this offer in the bucket and in this case we only update the key.
@@ -63,7 +63,6 @@ class Bucket():
         rs = self.download_files(files_names,folder=gcs_bucket_folder)
         response = rs["response"]
         downloaded_jobs_dict = self.__utils.parse_response(response,filename_field)
-        logging.info("{} files (jobkeys) found in bucket (to compare).".format(rs["downloaded"]))
 
 
 
@@ -94,9 +93,9 @@ class Bucket():
             except Exception as e:
                 pass
         
-        logging.info("{} updated files (same keys with different esco codes).".format(updated))
-        logging.info("{} identical files removed.".format(duplicates))
 
+
+        return updated, duplicates
 
     def upload_files(self,files : list, files_names : list, gcs_bucket_folder : str) -> int:
         """
@@ -132,7 +131,6 @@ class Bucket():
         This function compare each document from doc_list with the docs that are already in the bucket and uploads the new ones / updates the old ones.
         """
 
-        logging.info("{} documents to insert.".format(len(doc_list)))
 
         if not(isinstance(doc_list,list) and all(isinstance(item, dict) for item in doc_list)):
             raise Exception("doc_list must be a list of dictionaries.")
@@ -152,7 +150,7 @@ class Bucket():
 
         logging.info("{} unique documents.".format(len(list(os.listdir(files_path)))))
 
-        self.__compare_jobkeys(
+        updated, duplicates = self.__compare_jobkeys(
             gcs_bucket_folder=bucket_folder,
             comparison_field=comparison_field,
             files_path=files_path,
@@ -171,7 +169,9 @@ class Bucket():
             files_names=files_names,
             gcs_bucket_folder=bucket_folder,
             ) #Save files in files folder into the bucket
-        
-        logging.info("Files inserted/updated: {}".format(files_inserted))
+
+        logging.info("{} new files inserted.".format(len(files_inserted) - updated))
+        logging.info("{} updated files (same keys with different esco codes).".format(updated))
+        logging.info("{} identical files not inserted.".format(duplicates))
 
         self.__utils.clean_directory(files_path)
