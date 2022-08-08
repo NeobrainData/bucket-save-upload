@@ -63,7 +63,7 @@ class Bucket():
         rs = self.download_files(files_names,folder=gcs_bucket_folder)
         response = rs["response"]
         downloaded_jobs_dict = self.__utils.parse_response(response,filename_field)
-        logging.info("{} duplicated files found in bucket (to compare).".format(rs["downloaded"]))
+        logging.info("{} files (jobkeys) found in bucket (to compare).".format(rs["downloaded"]))
 
 
 
@@ -147,7 +147,7 @@ class Bucket():
 
         list(map(self.__utils.save_files_to_folder,doc_list,ids,paths,fields)) #Save jsons into files
 
-        logging.info("{} duplicated documents found.".format(len(doc_list)-len(list(os.listdir(files_path)))))
+        logging.info("{} unique documents.".format(len(list(os.listdir(files_path)))))
 
         self.__compare_jobkeys(
             gcs_bucket_folder=bucket_folder,
