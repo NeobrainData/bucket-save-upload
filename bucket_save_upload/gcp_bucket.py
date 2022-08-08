@@ -4,6 +4,7 @@ from .utils_file import Utils
 import os
 from .async_bucket import AsyncBucket
 from aiohttp.client_exceptions import ClientResponseError
+import logging
 
 class Bucket():
     """
@@ -62,8 +63,11 @@ class Bucket():
         rs = self.download_files(files_names,folder=gcs_bucket_folder)
         response = rs["response"]
         downloaded_jobs_dict = self.__utils.parse_response(response,filename_field)
+        logging.info("{} duplicated files found in bucket (to compare).".format(rs["downloaded"]))
 
 
+
+        updated = 0
         #Iterate over files in files folder and update the key if we already have it in the bucket
         for filename in files_names:
             new_job = self.__utils.load_json_file(files_path + "/{}".format(filename)) #Scraped job offer
@@ -79,6 +83,7 @@ class Bucket():
                     if esco_id not in downloaded_job[comparison_field]:
                         downloaded_job[comparison_field].append(esco_id) #Append current id to the existing job
                         new_esco_id = True
+                        updated += 1
                 if new_esco_id:
                     self.__utils.save_json_file(downloaded_job,filename,files_path+"/") #Save the job with the new id
                 else:
@@ -86,6 +91,8 @@ class Bucket():
 
             except Exception as e:
                 pass
+        
+        logging.info("{} updated esco codes.".format(updated))
 
 
     def upload_files(self,files : list, files_names : list, gcs_bucket_folder : str) -> int:
@@ -122,6 +129,8 @@ class Bucket():
         This function compare each document from doc_list with the docs that are already in the bucket and uploads the new ones / updates the old ones.
         """
 
+        logging.info("{} documents to insert.".format(len(doc_list)))
+
         if not(isinstance(doc_list,list) and all(isinstance(item, dict) for item in doc_list)):
             raise Exception("doc_list must be a list of dictionaries.")
 
@@ -129,14 +138,16 @@ class Bucket():
         if not os.path.exists(files_path):
             os.makedirs(files_path)
 
-        ids = [doc_list[i][filename_field] +".json" for i in range(len(doc_list))] #Generator with Id's
-        paths = [files_path+"/" for _ in ids] #Generator with paths
-        fields = [comparison_field for _ in ids] #Generator with fields to compare
+        ids = (doc_list[i][filename_field] +".json" for i in range(len(doc_list))) #Generator with Id's
+        paths = (files_path+"/" for _ in ids) #Generator with paths
+        fields = (comparison_field for _ in ids) #Generator with fields to compare
 
 
         self.__utils.clean_directory(files_path) 
 
         list(map(self.__utils.save_files_to_folder,doc_list,ids,paths,fields)) #Save jsons into files
+
+        logging.info("{} duplicated documents found.".format(len(doc_list)-len(list(os.listdir(files_path)))))
 
         self.__compare_jobkeys(
             gcs_bucket_folder=bucket_folder,
@@ -158,6 +169,6 @@ class Bucket():
             gcs_bucket_folder=bucket_folder,
             ) #Save files in files folder into the bucket
         
-        print("Files inserted/updated: {}".format(files_inserted))
+        logging.info("Files inserted/updated: {}".format(files_inserted))
 
         self.__utils.clean_directory(files_path)
