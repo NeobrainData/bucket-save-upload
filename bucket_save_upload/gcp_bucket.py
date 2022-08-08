@@ -68,6 +68,7 @@ class Bucket():
 
 
         updated = 0
+        duplicates = 0
         #Iterate over files in files folder and update the key if we already have it in the bucket
         for filename in files_names:
             new_job = self.__utils.load_json_file(files_path + "/{}".format(filename)) #Scraped job offer
@@ -87,12 +88,14 @@ class Bucket():
                 if new_esco_id:
                     self.__utils.save_json_file(downloaded_job,filename,files_path+"/") #Save the job with the new id
                 else:
+                    duplicates += 1
                     self.__utils.delete_file(filename,files_path) #Delete the file if we already have the offer
 
             except Exception as e:
                 pass
         
-        logging.info("{} updated esco codes.".format(updated))
+        logging.info("{} updated files (same keys with different esco codes).".format(updated))
+        logging.info("{} identical files removed.".format(duplicates))
 
 
     def upload_files(self,files : list, files_names : list, gcs_bucket_folder : str) -> int:
