@@ -163,15 +163,20 @@ class Bucket():
         for file in files_names:
             with open(files_path+"/"+file, mode="r") as f:
                 files.append(f.read())
+        
+        if files:
+            files_inserted = self.upload_files(
+                files=files,
+                files_names=files_names,
+                gcs_bucket_folder=bucket_folder,
+                ) #Save files in files folder into the bucket
 
-        files_inserted = self.upload_files(
-            files=files,
-            files_names=files_names,
-            gcs_bucket_folder=bucket_folder,
-            ) #Save files in files folder into the bucket
-
-        logging.info("{} new files inserted.".format(files_inserted - updated))
-        logging.info("{} updated files (same keys with different esco codes).".format(updated))
-        logging.info("{} identical files not inserted.".format(duplicates))
+            logging.info("{} new files inserted.".format(files_inserted - updated))
+            logging.info("{} updated files (same keys with different esco codes).".format(updated))
+            logging.info("{} identical files not inserted.".format(duplicates))
+        else:
+            logging.info("{} new files inserted.".format(0))
+            logging.info("{} updated files (same keys with different esco codes).".format(0))
+            logging.info("{} identical files not inserted.".format(duplicates)) 
 
         self.__utils.clean_directory(files_path)
