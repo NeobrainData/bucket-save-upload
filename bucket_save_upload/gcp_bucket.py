@@ -139,9 +139,9 @@ class Bucket():
         if not os.path.exists(files_path):
             os.makedirs(files_path)
 
-        ids = (doc_list[i][filename_field] +".json" for i in range(len(doc_list))) #Generator with Id's
-        paths = (files_path+"/" for _ in ids) #Generator with paths
-        fields = (comparison_field for _ in ids) #Generator with fields to compare
+        ids = [doc_list[i][filename_field] +".json" for i in range(len(doc_list))] #Generator with Id's
+        paths = [files_path+"/" for _ in ids] #Generator with paths
+        fields = [comparison_field for _ in ids] #Generator with fields to compare
 
 
         self.__utils.clean_directory(files_path) 
