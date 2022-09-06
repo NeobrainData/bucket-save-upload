@@ -8,7 +8,7 @@ setup(
     author="Rennan Valadares",
     author_email="rennanvoa2@gmail.com",
     url = 'https://github.com/NeobrainData/bucket-save',
-    download_url = 'https://github.com/rennanvoa2/save_spacy/archive/refs/tags/v1.0.1.tar.gz',
+    download_url = 'https://github.com/NeobrainData/bucket-save-upload/archive/refs/tags/v1.0.2.tar.gz',
     keywords = ['GCS', 'Google Cloud Storage', 'bucket', 'upload'],
     classifiers = [],
 )
