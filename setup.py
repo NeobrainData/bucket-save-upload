@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name = 'bucket_save_upload',
     packages = ['bucket_save_upload'],
-    version = 'v1.0.1',
+    version = 'v1.0.2',
     description = "Save and upload to GCS buckets in a parallel fashion.",
     author="Rennan Valadares",
     author_email="rennanvoa2@gmail.com",
