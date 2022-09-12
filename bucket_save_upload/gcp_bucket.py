@@ -11,9 +11,10 @@ class Bucket():
     """
     This class deals with the GCP bucket.
     """
-    def __init__(self,bucket_name : str ) -> None:
+    def __init__(self,bucket_name : str, verbose=True) -> None:
         if isinstance(bucket_name,str):
             self.__bucket_name = bucket_name
+            self.verbose = verbose
         else:
             raise Exception("Bucket name must be a string")
 
@@ -149,7 +150,7 @@ class Bucket():
 
         list(map(self.__utils.save_files_to_folder,doc_list,ids,paths,fields)) #Save jsons into files
 
-        logging.info("{} unique documents.".format(len(list(os.listdir(files_path)))))
+        if self.verbose : logging.info("{} unique documents.".format(len(list(os.listdir(files_path)))))
 
         updated, duplicates = self.__compare_jobkeys(
             gcs_bucket_folder=bucket_folder,
@@ -172,12 +173,12 @@ class Bucket():
                 gcs_bucket_folder=bucket_folder,
                 ) #Save files in files folder into the bucket
 
-            logging.info("{} new files inserted.".format(files_inserted - updated))
-            logging.info("{} updated files (same keys with different esco codes).".format(updated))
-            logging.info("{} identical files not inserted.".format(duplicates))
+            if self.verbose : logging.info("{} new files inserted.".format(files_inserted - updated))
+            if self.verbose : logging.info("{} updated files (same keys with different esco codes).".format(updated))
+            if self.verbose : logging.info("{} identical files not inserted.".format(duplicates))
         else:
-            logging.info("{} new files inserted.".format(0))
-            logging.info("{} updated files (same keys with different esco codes).".format(0))
-            logging.info("{} identical files not inserted.".format(duplicates)) 
+            if self.verbose : logging.info("{} new files inserted.".format(0))
+            if self.verbose : logging.info("{} updated files (same keys with different esco codes).".format(0))
+            if self.verbose : logging.info("{} identical files not inserted.".format(duplicates)) 
 
         self.__utils.clean_directory(files_path)
