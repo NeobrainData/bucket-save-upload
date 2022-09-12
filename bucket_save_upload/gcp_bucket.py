@@ -5,6 +5,7 @@ import os
 from .async_bucket import AsyncBucket
 from aiohttp.client_exceptions import ClientResponseError
 import logging
+logging.getLogger().setLevel(logging.INFO)
 
 class Bucket():
     """
